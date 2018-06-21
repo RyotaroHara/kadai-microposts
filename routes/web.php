@@ -10,10 +10,7 @@
 | contains the "web" middleware group. Now create something great!
 |
 */
-Route::get('/', function(){
-    return view('welcome');
-    
-});
+
 
 Route::get('/', 'MicropostsController@index');
 
@@ -26,14 +23,24 @@ Route::post('signup', 'Auth\RegisterController@register')->name('signup.post');
 Route::get('login', 'Auth\LoginController@showLoginForm')->name('login');
 Route::post('login', 'Auth\LoginController@login')->name('login.post');
 Route::get('logout', 'Auth\LoginController@logout')->name('logout.get');
+
 Route::group(['middleware' => ['auth']], function () {
-    Route::resource('users', 'UsersController', ['only' => ['index', 'show']]);
-    Route::group(['prefix' => 'users/{id}'], function() {
+        Route::resource('users', 'UsersController', ['only' => ['index', 'show']]);
+        Route::group(['prefix' => 'users/{id}'], function() {
+  
         Route::post('follow', 'UserFollowController@store')->name('user.follow');
         Route::delete('unfollow', 'UsersContoroller@destroy')->name('user.unfollow');
         Route::get('followings', 'UsersController@followings')->name('users.followings');
         Route::get('followers', 'UsersController@followers')->name('users.followers');
-        });  
   
-      Route::resource('microposts', 'MicropostsController', ['only' => ['store', 'destroy']]);
-});
+    // favorite lists
+        Route::get('favorites', 'UserFavoriteController@favorites')->name('users.favorites');
+        });
+        
+//favorite registration        
+        Route::post('favorites/{id}', 'UserFavoriteController@store')->name('user.favorite');
+//Unfavorite registration
+        Route::delete('unfavorite/{id}', 'UserFavoriteController@destroy')->name('user.unfavorite');
+        
+    });  
+        Route::resource('microposts', 'MicropostsController', ['only' => ['store', 'destroy']]);
